@@ -76,3 +76,4 @@ cd practice7-12
 node index.js
 Сервер: http://localhost:3000
 Swagger UI: http://localhost:3000/api-docs
+[Итоговый отчет 2 КР.docx](https://github.com/user-attachments/files/26791698/2.docx)
