@@ -1,34 +1,31 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
-export default function Login() {
+export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         
         try {
-            const response = await axios.post("http://localhost:3000/api/auth/login", {
-                email: email,
-                password: password
+            await axios.post("http://localhost:3000/api/auth/register", {
+                email,
+                password,
+                first_name: firstName,
+                last_name: lastName
             });
-            
-            console.log("Ответ:", response.data);
-            
-            if (response.data.accessToken) {
-                localStorage.setItem("accessToken", response.data.accessToken);
-                setSuccess(true);
-            } else {
-                setError("Токен не получен");
-            }
+            setSuccess(true);
+            setTimeout(() => navigate("/login"), 2000);
         } catch (err) {
-            console.error("Ошибка:", err);
-            setError("Ошибка: " + (err.response?.data?.error || err.message));
+            setError(err.response?.data?.error || "Ошибка регистрации");
         }
     };
 
@@ -36,10 +33,8 @@ export default function Login() {
         return (
             <div style={{ background: "#0b0f19", minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div style={{ background: "#1a1f2e", padding: 40, borderRadius: 16, textAlign: "center" }}>
-                    <h1 style={{ color: "#4ade80" }}>✅ Успешный вход!</h1>
-                    <p style={{ color: "white" }}>Токен сохранён в localStorage</p>
-                    <p style={{ color: "#888" }}>accessToken: {localStorage.getItem("accessToken")?.substring(0, 50)}...</p>
-                    <button onClick={() => window.location.href = "/products"} style={{ marginTop: 20, padding: "10px 20px", background: "#4f46e5", border: "none", borderRadius: 8, color: "white", cursor: "pointer" }}>Перейти к товарам</button>
+                    <h1 style={{ color: "#4ade80" }}>✅ Регистрация успешна!</h1>
+                    <p style={{ color: "white" }}>Перенаправление на страницу входа...</p>
                 </div>
             </div>
         );
@@ -48,7 +43,7 @@ export default function Login() {
     return (
         <div style={{ background: "#0b0f19", minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
             <div style={{ background: "#1a1f2e", padding: 40, borderRadius: 16, width: 400 }}>
-                <h1 style={{ color: "white", textAlign: "center" }}>Вход</h1>
+                <h1 style={{ color: "white", textAlign: "center" }}>Регистрация</h1>
                 <form onSubmit={handleSubmit}>
                     <input 
                         type="email" 
@@ -66,11 +61,27 @@ export default function Login() {
                         style={{ width: "100%", padding: 12, marginBottom: 15, borderRadius: 8, border: "1px solid #333", background: "#2a2f3e", color: "white" }} 
                         required 
                     />
+                    <input 
+                        type="text" 
+                        placeholder="Имя" 
+                        value={firstName} 
+                        onChange={e => setFirstName(e.target.value)} 
+                        style={{ width: "100%", padding: 12, marginBottom: 15, borderRadius: 8, border: "1px solid #333", background: "#2a2f3e", color: "white" }} 
+                        required 
+                    />
+                    <input 
+                        type="text" 
+                        placeholder="Фамилия" 
+                        value={lastName} 
+                        onChange={e => setLastName(e.target.value)} 
+                        style={{ width: "100%", padding: 12, marginBottom: 15, borderRadius: 8, border: "1px solid #333", background: "#2a2f3e", color: "white" }} 
+                        required 
+                    />
                     {error && <p style={{ color: "#ef4444", textAlign: "center" }}>{error}</p>}
-                    <button type="submit" style={{ width: "100%", padding: 12, borderRadius: 8, border: "none", background: "#4f46e5", color: "white", cursor: "pointer" }}>Войти</button>
+                    <button type="submit" style={{ width: "100%", padding: 12, borderRadius: 8, border: "none", background: "#4f46e5", color: "white", cursor: "pointer" }}>Зарегистрироваться</button>
                 </form>
                 <p style={{ textAlign: "center", marginTop: 20, color: "#888" }}>
-                    Нет аккаунта? <Link to="/register" style={{ color: "#4f46e5" }}>Зарегистрироваться</Link>
+                    Уже есть аккаунт? <Link to="/login" style={{ color: "#4f46e5" }}>Войти</Link>
                 </p>
             </div>
         </div>
